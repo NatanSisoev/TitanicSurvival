@@ -74,166 +74,140 @@
     
 %----------------------------------------------------------
 
-\section{Introduction}
+\section{EDA (exploratory data analysis)}
 
-    This sample document contains indications about how to write the report for the project in the subject of Natural Language Processing. The full report must be no longer than 5 pages without including references. \textbf{Any additional pages will not be evaluated}. The section structure is open, but you are encouraged to follow a principled academic writing style (you may mimic that of the papers provided as references). \textbf{Form will be taken into account in the evaluation of the project.}
+Llegint i analitzant la base de dades vam veure que teniem les següents variables:
 
-\section{Writing \LaTeX}
+\begin{itemize}
+    \item \textbf{PassengerId}: etiqueta, identifica a cada persona
+    \item \textbf{Survived}: binària, 1 = sí, 0 = no
+    \item \textbf{Pclass}: categòrica, 1 = primera, 2 = segona, 3 = tercera classe
+    \item \textbf{Name}: etiqueta, nom de la persona (potser no únic)
+    \item \textbf{Sex}: categòrica, female o male
+    \item \textbf{Age}: numèrica, edat en anys
+    \item \textbf{SibSp}: numèrica, nombre de germans o parelles en el Titanic
+    \item \textbf{Parch}: numèrica, nombre de pares o fills en el Titanic
+    \item \textbf{Ticket}: text, codi del tiquet
+    \item \textbf{Fare}: numèrica, preu del tiquet
+    \item \textbf{Cabin}: text, codi de la cabina
+    \item \textbf{Embarked}: categòrica, port d'embarcació: C = Cherbourg, Q = Queenstown, S = Southampton
+\end{itemize}
 
-	\LaTeX is the typesetting tool that most academics use these days. For this reason, you are required to present your work using it. \LaTeX has a bit of a steep learning curve at the beginning, but you will see that it is quite intuitive and you will get progressively more productive at it as you write.
+El target és l'atribut \textbf{Survived}, que pot prendre valors 0 o 1.
 
-    \subsection{Basics}
+Ens faltaven dades, el port d'embarcació per a 2 persones, l'edat per a 177 i la cabina per a 687.
 
-    \LaTeX is based on the idea of defining commands (or macros) that control the presentation of the text on a document. As a matter of fact, \LaTeX ignores whitespace except for double newlines (pressing intro twice), which is used to delimit paragraphs. Commands are usually preceeded by a backslash (\\) and have a number of arguments, if any, between braces (\{ and \}). You can set a \textbf{bold} or an \textit{italic} typeface using the \verb|\textbf{.}| and \verb|\textit{.}| commands. You can also {\tiny change the size of the font for a scope}. You can change {\color{red} text color} using the \verb|\color{col}| command. 
+Analitzant les correlacions entre variables i la distribució de les dades no trobem grans inconvenients i ens cal acabar de seleccionar, normalitzar i processar les dades.
 
-    Nevertheless, you should mostly refrain from formatting text explicitly. \LaTeX provides commands for recurring types of  text modifications with some batteries included. For instance, if you want to divide your text in chunks under prominent titles you can use the \verb|\section{.}|, \verb|\subsection{.}|, \verb|\subsubsection{.}| ... etc commands, which will handle everything for you. These titles will automatically appear in the table of contents, they will be properly numbered in the order of appearance, etc. If you are writing a book, you can also use the \verb|\part{.}| and \verb|\chapter{.}| commands for this.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figures/matriu_corr.png}
+    \caption{Matriu de correlacions}
+    \label{fig:exemple}
+\end{figure}
 
-    Many \LaTeX constructs are built around the \verb|\begin{environment}| and \verb|\end{environment}| commands. You write some text between these two commands that is to be formatted according to the rules of the given environment. With this, you can write
+\section{Preprocessing}
 
-    \begin{itemize}
-        \item Bullet point lists (environment itemize)
-    \end{itemize}
+Per a tractar les dades que ens falten hem començat per la cabina, considerem que és molt important per a la predicció, ho podem veure en la següent forografía.
 
-    \begin{enumerate}
-        \item Enumerations (environment enumerate)
-    \end{enumerate}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.2\textwidth]{figures/decks.png}
+    \caption{Decks}
+    \label{fig:exemple}
+\end{figure}
 
-    You can edit \LaTeX in any text editor of your choice. I suggest that you try Overleaf first, because the editing experience is very simple and very close to that of a shared Google Docs. These days they have gotten quite stingy however, so I suggest using VS Code with the \LaTeX Workshop extension instead. If you need to share the document, just put it in a Git repository. There are a myriad alternatives, so go out there and try what works for you.
-		
-\section{Figures and tables} \label{sec:table}
 
-    \subsection{Figures}
-		
-	Fig. \ref{fig:figure} shows an example figure. Figures can be referenced using \verb|\ref{ident}|, where \texttt{name} is a previously-defined \verb|\label{name}| for any object in the document. You can actually also do this with sections (Section \ref{sec:table}) or equations or other types of objects that will be seen below.
-		
-	\begin{figure}[H]
-		\centering
-		\includegraphics[width=0.75\columnwidth]{figures/Example}
-		\caption{Example figure obtained from PGFPlots \cite{PFGPlots}.}
-		\label{fig:figure}
-	\end{figure}
-		
-        Fig. \ref{fig:examplefloat} shows an example of two figures that cover the width of the page. It can be placed at the top or bottom of the page. The space between the figures can also be changed using the \verb|\hspace{Xpt}| command.
-		
-        \begin{figure*}[tp] % t for position at the top of the current page; b for position at the bottom; p for new page
-		\centering
-		  \begin{subfigure}[b]{0.38\linewidth} % Fig (a)
-			\includegraphics[width=\linewidth]{figures/Example2}
-			\caption{Example left figure.}
-			\label{fig:figa}
-		\end{subfigure}
-			\hspace{20pt}   % Space between the figures
-		\begin{subfigure}[b]{0.375\linewidth} % Fig (b)
-			\includegraphics[width=\linewidth]{figures/Example3}
-			\caption{Example right figure.}
-			\label{fig:figb}
-		\end{subfigure}
-		\caption{Example figure that covers the width of the page obtained from PGFPlots \cite{PFGPlots}.}
-		\label{fig:examplefloat}
-	\end{figure*}
+Com ens falten moltes dades (aproximadament 80\% dels passatgers no tenen cabina) no té sentit assignar una cabina a cada passatger, hem creat una nova variable que conté la lletra del codi de la cabina i els passatgers que no en tenen els hem assignat una X. Afegim una variable que indica si tenen cabina o no.
+Als passatgers que no tenien port hem considerat que podíem mirar passatgers que tinguin preus de tíquets similars i assignar a aquests passatgers aquest port.
+En el cas de l'edat hem decidit imputar les dades que ens falten (20\% aproximadament), la mitjana d'edat varia molt entre classes, les classes més pobres tenen una mitjana d'edat menor així que hem creat una variable que ens indica el nombre de familiars (més familiars pot indicar una edat més baixa), a més a més, tots els noms tenen un títol i aquests corresponen majoritàriament a una certa franja d'edat, sexe...
+Hem creat una variable amb el títol de cada persona, creiem que amb aquestes és un bon moment per usar KNN per a trobar passatgers similars i poder assignar una edat als que no en tenim dades, considerem que les variables rellevants són \textbf{Fare}, \textbf{SibSp}, \textbf{Parch}, \textbf{FamilySize}, \textbf{Title}, \textbf{Cabin\_missing} i  \textbf{Pclass}.
+Afegim variables binàries per indicar el deck (coberta que correspon a la lletra del codi del tíquet), el port d'embarcament i el sexe.
+Finalment, tractem amb els outliers i normalitzem les dades.
+El nostre dataset ens queda amb les següents variables ja normalitzades: \textbf{Sex\_male}, \textbf{Embarked\_Q}, \textbf{Embarked\_S}, \textbf{Deck\_B}, \textbf{Deck\_C}, \textbf{Deck\_D},
+\textbf{Deck\_E}, \textbf{Deck\_F}, \textbf{Deck\_G}, \textbf{Deck\_X}, \textbf{Title\_Military}, \textbf{Title\_Mr},
+\textbf{Title\_Mrs}, \textbf{Title\_Ms}, \textbf{Title\_Nobility}, \textbf{Title\_Rev}, \textbf{Age}, \textbf{SibSp},
+\textbf{Parch}, \textbf{Fare}, \textbf{FamilySize}, \textbf{Pclass}, \textbf{PassengerId}, \textbf{Survived} i
+\textbf{Cabin\_missing}.
 
-    \subsection{Tables}
-	
-        Table \ref{tab:table} shows an example table. The \verb|\tabletext{}| is used to add notes to tables easily. 
+\section{Metric selection}
 
-		
-	\begin{table}[H]
-		\centering
-		\caption{Small example table.}
-		\label{tab:table}
-		\begin{tabular}{cc}
-			\toprule
-			\textbf{Column 1} & \textbf{Column 2} \\
-			\midrule
-			Data 1 & Data 2 \\
-			Data 3 & Data 4 \\
-			\bottomrule
-		\end{tabular}
-			
-            \tabletext{Note: I'm a table text for additional information.}
-			
-	\end{table}
-		
-\section{Tau packages}
+En aquest apartat hem seleccionat la mètrica que millor s'ajusta al nostre model.
+\\\\
+Entrenem el model utilitzant regressió logística i obtenim les següents conclusions:
 
-    \subsection{Tauenvs}
-	
-        This template has its own environment package \textit{tauenvs.sty} designed to enhance the presentation of the document. Among these custom environments are \textit{tauenv}, \textit{info} and \textit{note}.
-		
-        There are two environments which have a predefined title. These can be included by the command \verb|\begin{note}| and \verb|\begin{info}|. All the environments have the same style.
-			
-        An example using the tau environment is shown below.
-		
-		
-        Tauenv is the only environment that you can customize its title. On the other hand, info and note adapt their title to Spanish automatically when this language package is defined.
-		
-    \subsection{Taubabel}
+\begin{itemize}
 
-        In this new version, we have included a package called \textit{taubabel}, which have all the commands that automatically translate from English to Spanish when this language package is defined. 
-        
-        By default, tau displays its content in English. However, at the beginning of the document you will find a recommendation when writing in Spanish. 
-		
-        \textit{Note:} You may modify this package if you want to use other language than English or Spanish. This will make easier to translate the document without having to modify the class document.
-		
-\section{Equation}
+\item \textbf{1. Accuracy}: Pot ser enganyosa en datasets desequilibrats.
+   Encara que no és extremadament desequilibrat, hi ha més morts que supervivents.
+   Així que un model que prediu gairebé sempre "mor" tindria bona accuracy, però no seria bo per detectar supervivents.
 
-    Equation \ref{ec:equation}, shows the Schrödinger equation as an example. 
-	\begin{equation} \label{ec:equation}
-		\frac{\hbar^2}{2m}\nabla^2\Psi + V(\mathbf{r})\Psi = -i\hbar \frac{\partial\Psi}{\partial t}
-	\end{equation} 
-    The \textit{amssymb} package was not necessary to include, because stix2 font incorporates mathematical symbols for writing quality equations. In case you choose another font, uncomment this package in tau-class/tau.cls/math packages.
-	
-    If you want to change the values that adjust the spacing above and below the equations, play with \verb|\setlength{\eqskip}{8pt}| value until the preferred spacing is set.
-	
-\section{Adding codes}
-	
-    This class\footnote{Hello there! I am a footnote :)} includes the \textit{listings} package, which offers customized features for adding codes in \LaTeX\ documents specifically for C, C++, \LaTeX\ and Matlab. 
-	
-    You can customize the format in tau-class/tau.cls/listings style.
-	
-    If line numbering is defined at the beginning of the document, I recommend placing the command \verb|\nolinenumbers| at the start and \verb|\linenumbers| at the end of the code. 
-	
-    This will temporarily remove line numbering and the code will look better as shown in Code.
-	
-\section{References}
+\item \textbf{2. Precision i Recall}: Precision mira quants  supervivents predits realment sobreviuen (minimitza falsos positius).
+\\ Recall mira quants  supervivents reals hem detectat (minimitza falsos negatius).
+\\Per comparar models cal un equilibri entre ambdues.
 
-    The default formatting for references follows the IEEE style. You can modify the style of your references, for that, go to tau-class/tau.cls/biblatex. See appendix for more information.
-	
-\section{Appendix}
+\item \textbf{3. Average Precision Score}: Resumeix tota la Precision-Recall curve.
+   És útil quan el model retorna probabilitats i hi ha molts casos positius escassos.
+   En aquest cas les classes no són extremadament desequilibrades.
 
-    \subsection{Alternative title}
+\item \textbf{4. ROC-AUC}: També resumeix la capacitat del model per separar classes.
+   Però dona menys informació en casos desequilibrats, pot donar una falsa sensació de bon rendiment quan hi ha molts negatius.
 
-        You can make the following modification in tau-class/tau.cls/title preferences section to change the position of the title.
+\item \textbf{5. F1-score}: Combina Precision i Recall en una mitjana, equilibrant la capacitat de detectar supervivents (recall) i no predir falsament supervivents (precision).
 
-	This will move the title to the center. 
+\end{itemize}
 
-    \subsection{Info environment}
+Per aquests motius, hem triat l'F1-score com a mètrica principal per avaluar els models.
 
-        An example of the info environment declared in the ‘tauenvs.sty’ package is shown below. Remember that \textit{info} and \textit{note} are the only packages that translate their title (English or Spanish).
-		
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figures/punt3.png}
+    \caption{Gràfics}
+    \label{fig:exemple}
+\end{figure}
 
-    \subsection{Equation skip value}
+Podem observar com hem generat diferents gràfics representant les dues corbes, la matriu de confusió, les fronteres per dues parelles de features i PCA.
 
-        With the \verb|\eqskip| command you can change the spacing for equations. The default \textit{eqskip} value is 8pt.
+\section{Model Selection amb Crossvalidation}
 
-		
-    \subsection{References}
-		
-        In case you require another reference style, you can go to tau-class/tau.cls/biblatex and modify the following.
-		
+Els mètodes que hem provat per fer validació creuada han estat: K-Fold, Stratified K-Fold, Repeated Stratified K-Fold i Shuffle \& Split. Els hem provat tots amb cadascun dels mètodes que presentarem a continuació. Com és un dataset petit, hem decidit escollir el més reobust, tot i tardar una mica més: Repeated Stratified K-Fold. L'implementem directament en la nostra class \texttt{Metrics}, de manera que qualsevol testeig que fem serà fent servir aquest tipus de validació creuada.
 
-        By default, \textit{tau class} has its own .bib for this example, if you want to name your own bib file, change the \textit{addbibresource}.
-		
+Seleccionem els següents models:
+\begin{itemize}
+    \item \textbf{Logistic Regression}
+    \item \textbf{KNN}
+    \item \textbf{Gradient Descent}
+    \item \textbf{Random Forest}
+    \item \textbf{Extra Trees}
+    \item \textbf{Support Vector Machine}
+    \item \textbf{LinearSVC}
+    \item \textbf{Gradient Boosting}
+    \item \textbf{Naive Bayes}
+    \item \textbf{Perceptron}
+    \item \textbf{Passive Agressive}
+    \item \textbf{Neural Network}
+\end{itemize}
 
-\section{Acknowledgements}
+Els més adequats són Random Forest, Extra Trees i Gradient Boosting, que gestionen bé petites mostres i desequilibris. Models lineals com Logistic Regression i SVC poden funcionar si les dades estan normalitzades, mentre que Perceptron i Passive Aggressive són menys útils. Altres com KNN, Naive Bayes o MLPClassifier poden donar resultats raonables però requereixen cura amb hiperparàmetres o tenen risc d’overfit.
 
-Tau \LaTeX template built by Guillermo Jimenez.
+Hem provat a reduïr la dimensionalitat del model per a veure si obtenim bons resultats en dimensions menor que poguem visualitzar, aquests són alguns dels resultats que hem obtingut:
 
-%----------------------------------------------------------
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figures/red_dims.png}
+    \caption{Corbes amb el dataset reduït}
+    \label{fig:exemple}
+\end{figure}
 
-\addcontentsline{toc}{section}{References}
-\printbibliography
+\section{Anàlisi Final}
+\textbf{RESULTATS DEL MODEL TRIAT AMB ELS MILLORS HIPERPARAMETRES}
 
-%----------------------------------------------------------
+**Preguntes:**
+* Mostreu les corves ROC/PR (la que hagueu escollit en l'apartat 2) i interpreteu els resultats.
+
+* Analitzeu en detall les diferents mètriques que trobeu adients i comenteu per sobre com podrieu fer servir aquest model en un futur. Això és el que es coneix com un cas d'ús.
+
+* Com creieu que es podria millorar el vostre model?
+
 
 \end{document}
